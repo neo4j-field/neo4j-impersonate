@@ -10,7 +10,7 @@ sourceCompatibility = 11
 
 repositories {
     jcenter()
-   /* maven {
+    maven {
         url "https://neo4j.bintray.com/enterprise"
         credentials {
             // define user and password in your $HOME/.gradle/gradle.properties
@@ -20,7 +20,7 @@ repositories {
         authentication {
             basic(BasicAuthentication)
         }
-    }*/
+    }
     maven {
         url "https://neo4j.bintray.com/enterprise-sources"
         credentials {
@@ -45,7 +45,8 @@ dependencies {
 //    seems like neo4j ServiceAnnotationProcessor does not work with gradle
 //    annotationProcessor group: 'org.neo4j', name: 'annotations', version: neo4jVersion
 
-    compileOnly group: 'org.neo4j', name: 'neo4j-configuration', version: neo4jVersion
+    compileOnly group: 'org.neo4j', name: 'neo4j-kernel', version: neo4jVersion
+    compileOnly group: 'com.neo4j', name: 'neo4j-security-enterprise', version: neo4jVersion
 
     testImplementation group: "org.junit.jupiter", name:"junit-jupiter-api", version: junitJupiterVersion
     testImplementation group: "org.junit.jupiter", name:"junit-jupiter-params", version: junitJupiterVersion
