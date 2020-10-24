@@ -47,6 +47,7 @@ dependencies {
 
     compileOnly group: 'org.neo4j', name: 'neo4j-kernel', version: neo4jVersion
     compileOnly group: 'com.neo4j', name: 'neo4j-security-enterprise', version: neo4jVersion
+    compileOnly group: 'com.github.ben-manes.caffeine', name: 'caffeine', version: '2.8.2'
 
     testImplementation group: "org.junit.jupiter", name:"junit-jupiter-api", version: junitJupiterVersion
     testImplementation group: "org.junit.jupiter", name:"junit-jupiter-params", version: junitJupiterVersion
