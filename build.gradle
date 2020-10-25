@@ -49,14 +49,21 @@ dependencies {
     compileOnly group: 'com.neo4j', name: 'neo4j-security-enterprise', version: neo4jVersion
     compileOnly group: 'com.github.ben-manes.caffeine', name: 'caffeine', version: '2.8.2'
 
-    testImplementation group: "org.junit.jupiter", name:"junit-jupiter-api", version: junitJupiterVersion
-    testImplementation group: "org.junit.jupiter", name:"junit-jupiter-params", version: junitJupiterVersion
-    testImplementation group: 'org.hamcrest', name:'hamcrest-library', version: '2.2'
-    //testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junitJupiterVersion"
+    testImplementation(platform("org.junit:junit-bom:$junitJupiterVersion"))
+    testImplementation('org.junit.jupiter:junit-jupiter')
+
     //testImplementation group: "org.testcontainers", name:"testcontainers", version: testContainerVersion
     //testImplementation group: "org.testcontainers", name:"junit-jupiter", version: testContainerVersion
 
     testImplementation group: 'com.neo4j.test', name: 'neo4j-harness-enterprise', version: neo4jVersion
     //testImplementation group: 'org.neo4j.driver', name: 'neo4j-java-driver', version: '4.1.1'
     //testImplementation 'com.github.stefanbirkner:system-rules:1.19.0'
+}
+
+
+test {
+    useJUnitPlatform()
+    testLogging {
+        events "passed", "skipped", "failed"
+    }
 }

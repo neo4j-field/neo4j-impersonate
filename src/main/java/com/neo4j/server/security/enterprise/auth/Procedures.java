@@ -55,7 +55,8 @@ public class Procedures {
     public Log log;
 
     @Procedure( name = "impersonate" )
-    public Stream<MapResult> impersonate(@Name( "username" ) String username, @Name("cypher") String cypher, @Name("params")Map<String,Object> params)
+    public Stream<MapResult> impersonate(@Name( "username" ) String username, @Name("cypher") String cypher,
+                                         @Name(value = "params",defaultValue = "{}") Map<String,Object> params)
     {
         DatabaseManagementService dbms = resolver.resolveDependency( DatabaseManagementService.class );
         GraphDatabaseAPI system = (GraphDatabaseAPI) dbms.database(SYSTEM_DATABASE_NAME);
@@ -67,7 +68,10 @@ public class Procedures {
         try (Transaction tx = system.beginTx()) {
             roleNames = userRolesCache.get(username, s -> {
 
-                Map<String, Object> user = Iterators.single(tx.execute("show users where user=$user", Collections.singletonMap("user", username)));
+                Map<String, Object> user = Iterators.singleOrNull(tx.execute("show users where user=$user", Collections.singletonMap("user", username)));
+                if (user == null) {
+                    throw new IllegalArgumentException("invalid user: " + username);
+                }
 
                 boolean suspended = (boolean) user.get("suspended");
                 if (suspended) {
