@@ -1,0 +1,40 @@
+# neo4j-impersonate
+
+Provides stored procedure to run impersonated cypher statements. Conceptually similar to `sudo` in UNIX: you run a command in the context of a different user.
+
+## installation
+
+* download jar file from []releases into neo4j's `/plugins` folder.
+* ensure impersonate is listed in unrestricted procedures, e.g. `dbms.security.procedures.unrestricted=impersonate*`
+* retstart neo4j
+
+## usage example
+
+Assume we have set up a role `restricted` for a db user `joe` that does not allow to read a `salary` property. This can be set up
+
+[source,cypher]
+----
+:use system
+CREATE ROLE restricted AS COPY OF reader;
+DENY READ {salary} ON GRAPHS * TO restricted;
+CREATE USER joe ;
+GRANT ROLE restricted TO joe;
+----
+
+We're setting up a person node with a salary:
+
+[source,cypher]
+----
+:use neo4j
+CREATE (p:Person{name:'John', salary: 1000.0});
+----
+
+If we're querying a all `Person` nodes using the `neo4j` (=admin) user, we're obviously seeing the `salary` property. If we run the same query in the context of `joe` we will see no `salaray`:
+
+
+[source,cypher]
+----
+:use neo4j
+CALL impersonate("joe", "MATCH (p:Person) RETURN p");
+----
+
