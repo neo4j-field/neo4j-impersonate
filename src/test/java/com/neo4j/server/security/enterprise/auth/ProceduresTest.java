@@ -11,13 +11,14 @@ import org.neo4j.graphdb.QueryExecutionException;
 import org.neo4j.graphdb.Transaction;
 import org.neo4j.harness.Neo4j;
 import org.neo4j.internal.helpers.collection.Iterators;
+import org.neo4j.plugins.impersonate.ImpersonateSettings;
 
+import java.time.Duration;
 import java.util.Collections;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class ProceduresTest {
 
@@ -29,6 +30,7 @@ class ProceduresTest {
     public static void startNeo4j() {
         neo4j = EnterpriseNeo4jBuilders.newInProcessBuilder()
                 .withConfig(GraphDatabaseSettings.auth_enabled, true)
+                .withConfig(ImpersonateSettings.prune_close_transactions, Duration.ofMillis(10))
                 .withProcedure(Procedures.class)
                 .withDisabledServer()
                 .build();

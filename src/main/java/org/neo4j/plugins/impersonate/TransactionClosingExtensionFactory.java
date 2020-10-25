@@ -1,5 +1,7 @@
 package org.neo4j.plugins.impersonate;
 
+import org.neo4j.annotations.service.ServiceProvider;
+import org.neo4j.configuration.Config;
 import org.neo4j.kernel.extension.ExtensionFactory;
 import org.neo4j.kernel.extension.ExtensionType;
 import org.neo4j.kernel.extension.context.ExtensionContext;
@@ -16,6 +18,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+@ServiceProvider
 public class TransactionClosingExtensionFactory extends ExtensionFactory<TransactionClosingExtensionFactory.Dependencies> {
 
     public TransactionClosingExtensionFactory() {
@@ -29,6 +32,7 @@ public class TransactionClosingExtensionFactory extends ExtensionFactory<Transac
 
     public interface Dependencies {
         LogService log();
+        Config config();
     }
 
     public static class TransactionClosing extends LifecycleAdapter {
@@ -48,6 +52,8 @@ public class TransactionClosingExtensionFactory extends ExtensionFactory<Transac
 
             Log log = dependencies.log().getInternalLog(TransactionClosingExtensionFactory.class);
 
+            long pruneDurationMillis = dependencies.config().get(ImpersonateSettings.prune_close_transactions).toMillis();
+
             scheduledExecutorService = Executors.newScheduledThreadPool(1);
             scheduledExecutorService.scheduleAtFixedRate(() -> {
                 try {
@@ -64,7 +70,7 @@ public class TransactionClosingExtensionFactory extends ExtensionFactory<Transac
                 } catch (Exception e) {
                     log.error(e.getMessage(), e);
                 }
-            }, 5, 5, TimeUnit.SECONDS);
+            }, pruneDurationMillis, pruneDurationMillis, TimeUnit.MILLISECONDS);
         }
 
         @Override
